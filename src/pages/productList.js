@@ -52,14 +52,22 @@ class productList extends React.Component {
 
   addToCart = (item) => { // Refatorar no futuro para evitar repetição de função productList x productDetails
     // const { cartItems } = this.state;
-    const { title, thumbnail, price, id } = item;
-    let currentList = [];
-    if (localStorage.getItem('cartItems')) {
-      currentList = JSON.parse(localStorage.getItem('cartItems'));
+    if (localStorage.getItem('cartItems')
+      && JSON.parse(localStorage.getItem('cartItems')).some((i) => i.id === item.id)) {
+      const currentList = JSON.parse(localStorage.getItem('cartItems'));
+      const itemToIncrease = currentList.find((i) => i.id === item.id);
+      itemToIncrease.quantity += 1;
+      localStorage.setItem('cartItems', JSON.stringify(currentList));
+    } else {
+      const { title, thumbnail, price, id } = item;
+      let currentList = [];
+      if (localStorage.getItem('cartItems')) {
+        currentList = JSON.parse(localStorage.getItem('cartItems'));
+      }
+      const newObj = { id, title, thumbnail, price, quantity: 1 };
+      const newArray = [...currentList, newObj];
+      localStorage.setItem('cartItems', JSON.stringify(newArray));
     }
-    const newObj = { id, title, thumbnail, price, quantity: 1 };
-    const newArray = [...currentList, newObj];
-    localStorage.setItem('cartItems', JSON.stringify(newArray));
   };
 
   render() {
