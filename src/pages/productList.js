@@ -11,11 +11,13 @@ class productList extends React.Component {
       // categoryId: '',
       querry: '',
       productResults: [],
+      cartQuantity: 0,
     };
   }
 
   componentDidMount() {
     this.getProductsCategories();
+    this.getCartQuantity();
   }
 
   getProductsCategories = async () => {
@@ -76,13 +78,48 @@ class productList extends React.Component {
       const newArray = [...currentList, newObj];
       localStorage.setItem('cartItems', JSON.stringify(newArray));
     }
+    this.getCartQuantity();
+  };
+
+  getCartQuantity = () => {
+    let cartLista = [];
+    const cartQuantity = [];
+    let quantity = 0;
+    if (localStorage.getItem('cartItems')) {
+      const getLocal = localStorage.getItem('cartItems');
+      cartLista = JSON.parse(getLocal);
+      cartLista.forEach((item) => (
+        cartQuantity.push(item.quantity)
+        // quantity += item.quantity
+      ));
+    }
+    for (let index = 0; index < cartQuantity.length; index += 1) {
+      quantity += cartQuantity[index];
+    }
+    this.setState({
+      cartQuantity: quantity,
+    });
+    localStorage.setItem('cartSize', quantity);
+    // console.log(quantity);
+    return quantity;
   };
 
   render() {
-    const { categoryList, querry, productResults } = this.state;
+    const { categoryList, querry, productResults, cartQuantity } = this.state;
     return (
       <div>
-        <Link to="/carrinho" data-testid="shopping-cart-button">Carrinho de compras</Link>
+        <div>
+          <Link
+            to="/carrinho"
+            data-testid="shopping-cart-button"
+          >
+            Carrinho de compras
+          </Link>
+          {
+            cartQuantity > 0
+              ? (<p data-testid="shopping-cart-size">{cartQuantity}</p>) : null
+          }
+        </div>
         <p data-testid="home-initial-message">
           Digite algum termo de pesquisa ou escolha uma categoria.
         </p>

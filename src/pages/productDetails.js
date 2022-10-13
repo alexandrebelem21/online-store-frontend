@@ -7,6 +7,7 @@ import RatingForm from '../components/RatingForm';
 class productDetails extends React.Component {
   state = {
     productObject: {},
+    cartQuantity: 0,
   };
 
   componentDidMount() {
@@ -18,6 +19,7 @@ class productDetails extends React.Component {
           productObject,
         });
       });
+    this.getCartQuantity();
   }
 
   addToCart = (productObject) => { // Refatorar no futuro para evitar repetição de função productList x productDetails
@@ -31,10 +33,34 @@ class productDetails extends React.Component {
     const newObj = { id, title, thumbnail, price, quantity: 1, availableQuantity };
     const newArray = [...currentList, newObj];
     localStorage.setItem('cartItems', JSON.stringify(newArray));
+    this.getCartQuantity();
+  };
+
+  getCartQuantity = () => {
+    let cartLista = [];
+    const cartQuantity = [];
+    let quantity = 0;
+    if (localStorage.getItem('cartItems')) {
+      const getLocal = localStorage.getItem('cartItems');
+      cartLista = JSON.parse(getLocal);
+      cartLista.forEach((item) => (
+        cartQuantity.push(item.quantity)
+        // quantity += item.quantity
+      ));
+    }
+    for (let index = 0; index < cartQuantity.length; index += 1) {
+      quantity += cartQuantity[index];
+    }
+    this.setState({
+      cartQuantity: quantity,
+    });
+    localStorage.setItem('cartSize', quantity);
+    // console.log(quantity);
+    return quantity;
   };
 
   render() {
-    const { productObject } = this.state;
+    const { productObject, cartQuantity } = this.state;
     const { title, thumbnail, price } = productObject;
     const { match: { params: { productId } } } = this.props;
     return (
@@ -42,7 +68,18 @@ class productDetails extends React.Component {
         <p data-testid="product-detail-name">{ title }</p>
         <p data-testid="product-detail-price">{ `R$ ${price}` }</p>
         <img data-testid="product-detail-image" src={ thumbnail } alt={ title } />
-        <Link to="/carrinho" data-testid="shopping-cart-button">Carrinho de compras</Link>
+        <div>
+          <Link
+            to="/carrinho"
+            data-testid="shopping-cart-button"
+          >
+            Carrinho de compras
+          </Link>
+          {
+            cartQuantity > 0
+              ? (<p data-testid="shopping-cart-size">{cartQuantity}</p>) : null
+          }
+        </div>
         <button
           type="button"
           data-testid="product-detail-add-to-cart"
