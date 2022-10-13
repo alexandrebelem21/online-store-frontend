@@ -1,11 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 class carrinhoDeCompras extends React.Component {
   constructor() {
     super();
     this.state = {
       cartList: [],
-      length: false,
     };
   }
 
@@ -19,7 +19,6 @@ class carrinhoDeCompras extends React.Component {
       const cartLista = JSON.parse(getLocal);
       this.setState({
         cartList: cartLista,
-        length: true,
       });
     }
   };
@@ -56,10 +55,10 @@ class carrinhoDeCompras extends React.Component {
   };
 
   render() {
-    const { cartList, length } = this.state;
+    const { cartList } = this.state;
     return (
       <div>
-        {length === false
+        {cartList.length === 0
           ? (<p data-testid="shopping-cart-empty-message">Seu carrinho está vazio</p>)
           : (
             <div>
@@ -100,6 +99,7 @@ class carrinhoDeCompras extends React.Component {
               }
             </div>
           )}
+        <Link to="/checkout" data-testid="checkout-products">Finalizar Compra</Link>
       </div>
     );
   }
