@@ -11,11 +11,13 @@ class productList extends React.Component {
       // categoryId: '',
       querry: '',
       productResults: [],
+      cartQuantity: 0,
     };
   }
 
   componentDidMount() {
     this.getProductsCategories();
+    this.getCartQuantity();
   }
 
   getProductsCategories = async () => {
@@ -50,11 +52,74 @@ class productList extends React.Component {
     });
   };
 
+  addToCart = (item) => { // Refatorar no futuro para evitar repetição de função productList x productDetails
+    // const { cartItems } = this.state;
+    if (localStorage.getItem('cartItems')
+      && JSON.parse(localStorage.getItem('cartItems')).some((i) => i.id === item.id)) {
+      const currentList = JSON.parse(localStorage.getItem('cartItems'));
+      const itemToIncrease = currentList.find((i) => i.id === item.id);
+      itemToIncrease.quantity += 1;
+      localStorage.setItem('cartItems', JSON.stringify(currentList));
+    } else {
+      const { title, thumbnail, price, id } = item;
+      let currentList = [];
+      if (localStorage.getItem('cartItems')) {
+        currentList = JSON.parse(localStorage.getItem('cartItems'));
+      }
+      const availableQuantity = item.available_quantity;
+      const newObj = {
+        id,
+        title,
+        thumbnail,
+        price,
+        quantity: 1,
+        availableQuantity,
+      };
+      const newArray = [...currentList, newObj];
+      localStorage.setItem('cartItems', JSON.stringify(newArray));
+    }
+    this.getCartQuantity();
+  };
+
+  getCartQuantity = () => {
+    let cartLista = [];
+    const cartQuantity = [];
+    let quantity = 0;
+    if (localStorage.getItem('cartItems')) {
+      const getLocal = localStorage.getItem('cartItems');
+      cartLista = JSON.parse(getLocal);
+      cartLista.forEach((item) => (
+        cartQuantity.push(item.quantity)
+        // quantity += item.quantity
+      ));
+    }
+    for (let index = 0; index < cartQuantity.length; index += 1) {
+      quantity += cartQuantity[index];
+    }
+    this.setState({
+      cartQuantity: quantity,
+    });
+    localStorage.setItem('cartSize', quantity);
+    // console.log(quantity);
+    return quantity;
+  };
+
   render() {
-    const { categoryList, querry, productResults } = this.state;
+    const { categoryList, querry, productResults, cartQuantity } = this.state;
     return (
       <div>
-        <Link to="/carrinho" data-testid="shopping-cart-button">Carrinho de compras</Link>
+        <div>
+          <Link
+            to="/carrinho"
+            data-testid="shopping-cart-button"
+          >
+            Carrinho de compras
+          </Link>
+          {
+            cartQuantity > 0
+              ? (<p data-testid="shopping-cart-size">{cartQuantity}</p>) : null
+          }
+        </div>
         <p data-testid="home-initial-message">
           Digite algum termo de pesquisa ou escolha uma categoria.
         </p>
@@ -91,6 +156,23 @@ class productList extends React.Component {
                   R$:
                   {item.price}
                 </p>
+                {item.shipping.free_shipping
+                && <p data-testid="free-shipping">Frete Grátis</p>}
+
+                <Link
+                  to={ `detalhes/${item.id}` }
+                  data-testid="product-detail-link"
+                >
+                  Detalhes
+                </Link>
+
+                <button
+                  type="button"
+                  data-testid="product-add-to-cart"
+                  onClick={ () => this.addToCart(item) }
+                >
+                  Adicionar ao carrinho
+                </button>
               </div>
             ))
           }
