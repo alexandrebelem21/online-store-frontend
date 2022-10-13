@@ -82,6 +82,7 @@ class productList extends React.Component {
           categoryList={ categoryList }
           handleClickCategory={ this.handleClickCategory }
         />
+
         <label htmlFor="query-input">
           <input
             data-testid="query-input"
@@ -97,6 +98,7 @@ class productList extends React.Component {
           onClick={ this.handleClick }
         >
           Buscar
+
         </button>
         <div>
           {productResults.length === 0 && <p>Nenhum produto foi encontrado</p>}
@@ -130,4 +132,5 @@ class productList extends React.Component {
     );
   }
 }
+
 export default productList;
