@@ -111,12 +111,16 @@ class productList extends React.Component {
                   R$:
                   {item.price}
                 </p>
+                {item.shipping.free_shipping
+                && <p data-testid="free-shipping">Frete Grátis</p>}
+
                 <Link
                   to={ `detalhes/${item.id}` }
                   data-testid="product-detail-link"
                 >
                   Detalhes
                 </Link>
+
                 <button
                   type="button"
                   data-testid="product-add-to-cart"
