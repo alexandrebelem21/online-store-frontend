@@ -64,7 +64,15 @@ class productList extends React.Component {
       if (localStorage.getItem('cartItems')) {
         currentList = JSON.parse(localStorage.getItem('cartItems'));
       }
-      const newObj = { id, title, thumbnail, price, quantity: 1 };
+      const availableQuantity = item.available_quantity;
+      const newObj = {
+        id,
+        title,
+        thumbnail,
+        price,
+        quantity: 1,
+        availableQuantity,
+      };
       const newArray = [...currentList, newObj];
       localStorage.setItem('cartItems', JSON.stringify(newArray));
     }

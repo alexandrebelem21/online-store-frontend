@@ -38,7 +38,9 @@ class carrinhoDeCompras extends React.Component {
   increase = (item) => {
     const currentList = JSON.parse(localStorage.getItem('cartItems'));
     const itemToIncrease = currentList.find((i) => i.id === item.id);
-    itemToIncrease.quantity += 1;
+    if (itemToIncrease.availableQuantity > itemToIncrease.quantity) {
+      itemToIncrease.quantity += 1;
+    }
     localStorage.setItem('cartItems', JSON.stringify(currentList));
     this.setState({
       cartList: currentList,
